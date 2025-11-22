@@ -36,6 +36,10 @@ cat > chroot/root/setup-base.sh << 'BASEEOF'
 #!/bin/bash
 set -e
 echo "camos-glasstech" > /etc/hostname
+
+# Install GPG first
+apt install -y gnupg2 ca-certificates
+
 cat > /etc/apt/sources.list << EOF
 deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb http://security.debian.org/debian-security bookworm-security main contrib non-free
@@ -385,10 +389,10 @@ echo "🧹 Cleaning up..."
 chroot chroot apt clean
 chroot chroot apt autoremove -y -qq
 
-umount chroot/dev/pts || true
-umount chroot/dev || true
-umount chroot/proc || true
-umount chroot/sys || true
+umount -l chroot/dev/pts 2>/dev/null || true
+umount -l chroot/dev 2>/dev/null || true
+umount -l chroot/proc 2>/dev/null || true
+umount -l chroot/sys 2>/dev/null || true
 
 echo "💿 Building ISO..."
 mkdir -p image/{casper,isolinux,install}
@@ -425,7 +429,7 @@ ISO_PATH="$HOME/camos-glasstech-native.iso"
 [ -f ../camos-glasstech-native.iso ] && mv ../camos-glasstech-native.iso "$ISO_PATH"
 
 cd /
-rm -rf "$BUILD_DIR"
+rm -rf "$BUILD_DIR" 2>/dev/null || true
 
 echo ""
 echo "✅ CamOS GlassTech NATIVE ISO COMPLETE!"
