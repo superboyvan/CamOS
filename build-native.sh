@@ -20,7 +20,7 @@ cd "$BUILD_DIR"
 
 echo "📦 Installing build tools..."
 apt update -qq
-apt install -y -qq debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools git build-essential cmake pkg-config nodejs npm python3-pip libx11-dev libxext-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev libcairo2-dev libpango1.0-dev librsvg2-dev >/dev/null 2>&1
+apt install -y -qq debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools git build-essential cmake pkg-config nodejs npm python3-pip python3-pil libx11-dev libxext-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev libcairo2-dev libpango1.0-dev librsvg2-dev libxcomposite-dev libxrender-dev libxdamage-dev libxfixes-dev >/dev/null 2>&1
 
 echo "🐧 Bootstrapping Debian..."
 debootstrap --arch=amd64 --variant=minbase bookworm chroot http://deb.debian.org/debian/ >/dev/null 2>&1
@@ -41,7 +41,7 @@ deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmwa
 deb http://security.debian.org/debian-security bookworm-security main contrib non-free
 EOF
 apt update -qq
-DEBIAN_FRONTEND=noninteractive apt install -y -qq linux-image-amd64 systemd network-manager sudo curl wget git xorg x11-xserver-utils xinit lightdm build-essential pkg-config libx11-dev libxrandr-dev libxinerama-dev libcairo2-dev libpango1.0-dev librsvg2-dev pulseaudio firefox-esr thunar xfce4-terminal vlc gedit htop >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive apt install -y -qq linux-image-amd64 systemd network-manager sudo curl wget git xorg x11-xserver-utils xinit lightdm build-essential pkg-config libx11-dev libxrandr-dev libxinerama-dev libcairo2-dev libpango1.0-dev librsvg2-dev libxcomposite-dev libxrender-dev libxdamage-dev libxfixes-dev pulseaudio firefox-esr thunar xfce4-terminal vlc gedit htop python3-pil >/dev/null 2>&1
 useradd -m -s /bin/bash cam
 echo "cam:camos" | chpasswd
 usermod -aG sudo cam
