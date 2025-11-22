@@ -30,6 +30,10 @@ mount --bind /dev/pts chroot/dev/pts
 mount --bind /proc chroot/proc
 mount --bind /sys chroot/sys
 
+# Fix /dev/null permissions in chroot
+chmod 666 chroot/dev/null 2>/dev/null || true
+chmod 666 chroot/dev/zero 2>/dev/null || true
+
 echo "⚙️ Configuring base system..."
 
 cat > chroot/root/setup-base.sh << 'BASEEOF'
@@ -37,15 +41,16 @@ cat > chroot/root/setup-base.sh << 'BASEEOF'
 set -e
 echo "camos-glasstech" > /etc/hostname
 
-# Install GPG first
-apt install -y gnupg2 ca-certificates
+# Install gpgv first
+DEBIAN_FRONTEND=noninteractive apt install -y gpgv gnupg2 ca-certificates 2>&1 | grep -v "debconf"
 
 cat > /etc/apt/sources.list << EOF
 deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb http://security.debian.org/debian-security bookworm-security main contrib non-free
 EOF
-apt update -qq
-DEBIAN_FRONTEND=noninteractive apt install -y -qq linux-image-amd64 systemd network-manager sudo curl wget git xorg x11-xserver-utils xinit lightdm build-essential pkg-config libx11-dev libxrandr-dev libxinerama-dev libcairo2-dev libpango1.0-dev librsvg2-dev libxcomposite-dev libxrender-dev libxdamage-dev libxfixes-dev pulseaudio firefox-esr thunar xfce4-terminal vlc gedit htop python3-pil >/dev/null 2>&1
+
+apt update -qq 2>&1 | grep -v "debconf"
+DEBIAN_FRONTEND=noninteractive apt install -y -qq linux-image-amd64 systemd network-manager sudo curl wget git xorg x11-xserver-utils xinit lightdm build-essential pkg-config libx11-dev libxrandr-dev libxinerama-dev libcairo2-dev libpango1.0-dev librsvg2-dev libxcomposite-dev libxrender-dev libxdamage-dev libxfixes-dev pulseaudio firefox-esr thunar xfce4-terminal vlc gedit htop python3-pil 2>&1 | grep -v "debconf"
 useradd -m -s /bin/bash cam
 echo "cam:camos" | chpasswd
 usermod -aG sudo cam
